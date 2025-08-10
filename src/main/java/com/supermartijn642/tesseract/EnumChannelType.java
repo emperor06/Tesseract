@@ -14,7 +14,8 @@ public enum EnumChannelType {
 
     ITEMS(0, () -> Items.CHEST, "gui.tesseract.type.items"),
     FLUID(1, () -> Items.BUCKET, "gui.tesseract.type.fluid"),
-    ENERGY(2, () -> Items.REDSTONE, "gui.tesseract.type.energy");
+    ENERGY(2, () -> Items.REDSTONE, "gui.tesseract.type.energy"),
+    CHEMICAL(3, () -> Items.POTION, "gui.tesseract.type.chemical");
 
     private final int index;
     public final Supplier<Item> item;

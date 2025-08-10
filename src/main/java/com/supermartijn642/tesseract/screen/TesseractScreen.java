@@ -11,9 +11,11 @@ import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.tesseract.EnumChannelType;
 import com.supermartijn642.tesseract.Tesseract;
 import com.supermartijn642.tesseract.TesseractBlockEntity;
+import com.supermartijn642.tesseract.integration.MekanismUtils;
 import com.supermartijn642.tesseract.manager.Channel;
 import com.supermartijn642.tesseract.manager.TesseractChannelManager;
 import com.supermartijn642.tesseract.packets.PacketScreenSetChannel;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -42,6 +44,7 @@ public class TesseractScreen extends BlockEntityBaseWidget<TesseractBlockEntity>
     private static final ResourceLocation ITEM_ICON = ResourceLocation.fromNamespaceAndPath("tesseract", "textures/gui/item_tab_icon.png");
     private static final ResourceLocation ENERGY_ICON = ResourceLocation.fromNamespaceAndPath("tesseract", "textures/gui/energy_tab_icon.png");
     private static final ResourceLocation FLUID_ICON = ResourceLocation.fromNamespaceAndPath("tesseract", "textures/gui/fluid_tab_icon.png");
+    private static final ResourceLocation CHEMICAL_ICON = ResourceLocation.fromNamespaceAndPath("tesseract", "textures/gui/fluid_tab_icon.png");
     private static final ResourceLocation SCROLL_BUTTONS = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/server_selection.png");
     public static final ResourceLocation LOCK_ON = ResourceLocation.fromNamespaceAndPath("tesseract", "textures/gui/lock_on.png");
     public static final ResourceLocation LOCK_OFF = ResourceLocation.fromNamespaceAndPath("tesseract", "textures/gui/lock_off.png");
@@ -156,6 +159,8 @@ public class TesseractScreen extends BlockEntityBaseWidget<TesseractBlockEntity>
             ScreenUtils.drawTooltip(context.poseStack(), EnumChannelType.ENERGY.getTranslation(), mouseX, mouseY);
         else if(mouseX >= 67 && mouseX < 89 && mouseY >= (type == EnumChannelType.FLUID ? 2 : 4) && mouseY < 28)
             ScreenUtils.drawTooltip(context.poseStack(), EnumChannelType.FLUID.getTranslation(), mouseX, mouseY);
+        else if(MekanismUtils.isMekanismInstalled() && mouseX >= 96 && mouseX < 118 && mouseY >= (type == EnumChannelType.CHEMICAL ? 2 : 4) && mouseY < 28)
+            ScreenUtils.drawTooltip(context.poseStack(), EnumChannelType.CHEMICAL.getTranslation(), mouseX, mouseY);
 
         super.renderTooltips(context, mouseX, mouseY, entity);
     }
@@ -169,6 +174,10 @@ public class TesseractScreen extends BlockEntityBaseWidget<TesseractBlockEntity>
 
         // fluid
         this.drawTab(context, EnumChannelType.FLUID, 64, FLUID_ICON);
+
+        // chemical
+        if(MekanismUtils.isMekanismInstalled())
+            this.drawTab(context, EnumChannelType.CHEMICAL, 93, CHEMICAL_ICON);
 
         // transfer
         ScreenUtils.bindTexture(SIDE_TAB);
@@ -289,6 +298,9 @@ public class TesseractScreen extends BlockEntityBaseWidget<TesseractBlockEntity>
                     hasBeenHandled = true;
                 }else if(mouseX >= 64 && mouseX < 64 + 28 && type != EnumChannelType.FLUID){
                     this.setChannelType(EnumChannelType.FLUID);
+                    hasBeenHandled = true;
+                }else if(MekanismUtils.isMekanismInstalled() && mouseX >= 93 && mouseX < 93 + 28 && type != EnumChannelType.CHEMICAL){
+                    this.setChannelType(EnumChannelType.CHEMICAL);
                     hasBeenHandled = true;
                 }
             }else if(mouseX >= 3 && mouseX < 105 && mouseY >= 31 && mouseY < 187){ // channels

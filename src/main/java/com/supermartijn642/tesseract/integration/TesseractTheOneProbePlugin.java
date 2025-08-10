@@ -52,6 +52,8 @@ public class TesseractTheOneProbePlugin {
                 probeInfo.text(formatChannelInfo(EnumChannelType.ITEMS, tesseract.getChannelId(EnumChannelType.ITEMS)));
                 probeInfo.text(formatChannelInfo(EnumChannelType.ENERGY, tesseract.getChannelId(EnumChannelType.ENERGY)));
                 probeInfo.text(formatChannelInfo(EnumChannelType.FLUID, tesseract.getChannelId(EnumChannelType.FLUID)));
+                if(MekanismUtils.isMekanismInstalled())
+                    probeInfo.text(formatChannelInfo(EnumChannelType.CHEMICAL, tesseract.getChannelId(EnumChannelType.CHEMICAL)));
                 if(tesseract.isBlockedByRedstone())
                     probeInfo.text(TextComponents.string(TextStyleClass.ERROR.toString()).translation("tesseract.tesseract.highlight.redstone_blocked").get());
             }

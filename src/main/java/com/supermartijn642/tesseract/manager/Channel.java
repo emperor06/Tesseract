@@ -2,9 +2,11 @@ package com.supermartijn642.tesseract.manager;
 
 import com.supermartijn642.tesseract.EnumChannelType;
 import com.supermartijn642.tesseract.TesseractBlockEntity;
+import com.supermartijn642.tesseract.capabilities.CombinedChemicalHandler;
 import com.supermartijn642.tesseract.capabilities.CombinedEnergyStorage;
 import com.supermartijn642.tesseract.capabilities.CombinedFluidHandler;
 import com.supermartijn642.tesseract.capabilities.CombinedItemHandler;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 
@@ -142,6 +144,10 @@ public class Channel {
 
     public CombinedFluidHandler getFluidHandler(TesseractBlockEntity self){
         return new CombinedFluidHandler(this, self);
+    }
+
+    public CombinedChemicalHandler getChemicalHandler(TesseractBlockEntity self){
+        return new CombinedChemicalHandler(this, self);
     }
 
     public CombinedEnergyStorage getEnergyStorage(TesseractBlockEntity self){

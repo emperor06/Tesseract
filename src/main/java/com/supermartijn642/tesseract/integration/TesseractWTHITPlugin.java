@@ -6,6 +6,7 @@ import com.supermartijn642.tesseract.TesseractBlock;
 import com.supermartijn642.tesseract.TesseractBlockEntity;
 import com.supermartijn642.tesseract.manager.Channel;
 import com.supermartijn642.tesseract.manager.TesseractChannelManager;
+
 import mcp.mobius.waila.api.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -27,6 +28,8 @@ public class TesseractWTHITPlugin implements IBlockComponentProvider, IWailaClie
                 tooltip.setLine(ResourceLocation.parse("wailax:energy"));
                 tooltip.setLine(ResourceLocation.parse("wailax:fluid"));
                 tooltip.setLine(ResourceLocation.parse("wailax:item"));
+                // TODO remove chemicals; the next line does not work
+                tooltip.setLine(ResourceLocation.fromNamespaceAndPath("mekanism", "chemical"));
             }
         }, TesseractBlockEntity.class, 2000);
     }
@@ -41,6 +44,8 @@ public class TesseractWTHITPlugin implements IBlockComponentProvider, IWailaClie
             tooltip.addLine(formatChannelInfo(EnumChannelType.ITEMS, tesseract.getChannelId(EnumChannelType.ITEMS)));
             tooltip.addLine(formatChannelInfo(EnumChannelType.ENERGY, tesseract.getChannelId(EnumChannelType.ENERGY)));
             tooltip.addLine(formatChannelInfo(EnumChannelType.FLUID, tesseract.getChannelId(EnumChannelType.FLUID)));
+            if(MekanismUtils.isMekanismInstalled())
+                tooltip.addLine(formatChannelInfo(EnumChannelType.CHEMICAL, tesseract.getChannelId(EnumChannelType.CHEMICAL)));
             if(tesseract.isBlockedByRedstone())
                 tooltip.addLine(TextComponents.translation("tesseract.tesseract.highlight.redstone_blocked").color(ChatFormatting.RED).get());
         }

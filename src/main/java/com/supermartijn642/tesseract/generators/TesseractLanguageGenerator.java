@@ -17,7 +17,7 @@ public class TesseractLanguageGenerator extends LanguageGenerator {
     public void generate(){
         // Tesseract item
         this.block(Tesseract.tesseract, "Tesseract");
-        this.translation("tesseract.tesseract.info", "Items, fluids, and energy can be transferred between multiple tesseracts");
+        this.translation("tesseract.tesseract.info", "Items, fluids, chemicals, and energy can be transferred between multiple tesseracts");
 
         // Highlight info
         this.translation("tesseract.tesseract.highlight.channels", "Channels:");
@@ -30,9 +30,11 @@ public class TesseractLanguageGenerator extends LanguageGenerator {
         this.translation("gui.tesseract.title", "Tesseract");
         this.translation("gui.tesseract.items", "TESSERACT - ITEMS");
         this.translation("gui.tesseract.fluid", "TESSERACT - FLUID");
+        this.translation("gui.tesseract.chemical", "TESSERACT - CHEMICAL");
         this.translation("gui.tesseract.energy", "TESSERACT - ENERGY");
         this.translation("gui.tesseract.type.items", "Items");
         this.translation("gui.tesseract.type.fluid", "Fluids");
+        this.translation("gui.tesseract.type.chemical", "Chemicals");
         this.translation("gui.tesseract.type.energy", "Energy");
         this.translation("gui.tesseract.set", "Activate");
         this.translation("gui.tesseract.unset", "Deactivate");
@@ -50,12 +52,14 @@ public class TesseractLanguageGenerator extends LanguageGenerator {
         this.translation("gui.tesseract.channel.public", "Public");
         this.translation("gui.tesseract.add.title.items", "Create Item Channel");
         this.translation("gui.tesseract.add.title.fluid", "Create Fluid Channel");
+        this.translation("gui.tesseract.add.title.chemical", "Create Chemical Channel");
         this.translation("gui.tesseract.add.title.energy", "Create Energy Channel");
         this.translation("gui.tesseract.add.suggestion", "Channel name");
         this.translation("gui.tesseract.add.add", "Create");
         this.translation("gui.tesseract.add.cancel", "Cancel");
         this.translation("gui.tesseract.remove.title.items", "Remove Item Channel");
         this.translation("gui.tesseract.remove.title.fluid", "Remove Fluid Channel");
+        this.translation("gui.tesseract.remove.title.chemical", "Remove Chemical Channel");
         this.translation("gui.tesseract.remove.title.energy", "Remove Energy Channel");
         this.translation("gui.tesseract.remove.remove", "Remove");
         this.translation("gui.tesseract.remove.cancel", "Cancel");
@@ -67,6 +71,7 @@ public class TesseractLanguageGenerator extends LanguageGenerator {
         this.translation("gui.tesseract.info.tab.gui", "Tesseract Screen");
         this.translation("gui.tesseract.info.tab.items", "Item Transport");
         this.translation("gui.tesseract.info.tab.fluid", "Fluid Transport");
+        this.translation("gui.tesseract.info.tab.chemical", "Chemical Transport");
         this.translation("gui.tesseract.info.tab.energy", "Energy Transport");
 
         // Jade

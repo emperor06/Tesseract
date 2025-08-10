@@ -1,9 +1,12 @@
 package com.supermartijn642.tesseract;
 
 import com.supermartijn642.core.block.BaseBlockEntity;
+import com.supermartijn642.tesseract.capabilities.ModCapabilities;
 import com.supermartijn642.tesseract.manager.Channel;
 import com.supermartijn642.tesseract.manager.TesseractReference;
 import com.supermartijn642.tesseract.manager.TesseractTracker;
+
+import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -79,6 +82,13 @@ public class TesseractBlockEntity extends BaseBlockEntity {
         });
     }
 
+    public IChemicalHandler getChemicalCapability(){
+        return (IChemicalHandler)this.capabilities.computeIfAbsent(EnumChannelType.CHEMICAL, o -> {
+            Channel channel = this.getChannel(EnumChannelType.CHEMICAL);
+            return channel == null ? null : channel.getChemicalHandler(this);
+        });
+    }
+
     public IEnergyStorage getEnergyCapability(){
         return (IEnergyStorage)this.capabilities.computeIfAbsent(EnumChannelType.ENERGY, o -> {
             Channel channel = this.getChannel(EnumChannelType.ENERGY);
@@ -94,6 +104,10 @@ public class TesseractBlockEntity extends BaseBlockEntity {
         return this.getSurroundingCapabilities(EnumChannelType.FLUID);
     }
 
+    public List<IChemicalHandler> getSurroundingChemicalCapabilities(){
+        return this.getSurroundingCapabilities(EnumChannelType.CHEMICAL);
+    }
+
     public List<IEnergyStorage> getSurroundingEnergyCapabilities(){
         return this.getSurroundingCapabilities(EnumChannelType.ENERGY);
     }
@@ -105,6 +119,7 @@ public class TesseractBlockEntity extends BaseBlockEntity {
         BlockCapability<?,Direction> capability = switch(type){
             case ITEMS -> Capabilities.ItemHandler.BLOCK;
             case FLUID -> Capabilities.FluidHandler.BLOCK;
+            case CHEMICAL -> ModCapabilities.CHEMICAL_HANDLER_CAPABILITY;
             case ENERGY -> Capabilities.EnergyStorage.BLOCK;
         };
 

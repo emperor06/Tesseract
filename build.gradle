@@ -27,6 +27,7 @@ repositories {
         filter { includeGroup "maven.modrinth" }
     }
     maven { url = "https://repo.spongepowered.org/maven" }
+    maven { url = "https://modmaven.dev" }
 }
 
 dependencies {
@@ -46,6 +47,13 @@ dependencies {
     implementation "curse.maven:wthit-forge-455982:${wthit_file}"
     // Bad Packets
     runtimeOnly "curse.maven:badpackets-615134:${bad_packets_file}"
+
+	// Mekanism
+    compileOnly "mekanism:Mekanism:${mekanism_version}:api"
+    runtimeOnly "mekanism:Mekanism:${mekanism_version}"
+    runtimeOnly "mekanism:Mekanism:${mekanism_version}:additions"
+    runtimeOnly "mekanism:Mekanism:${mekanism_version}:generators"
+    runtimeOnly "mekanism:Mekanism:${mekanism_version}:tools"
 
     // Just Enough Items
 //    runtimeOnly "curse.maven:jei-238222:${just_enough_items_file}"
@@ -72,6 +80,13 @@ tasks.withType(ProcessResources).configureEach {
 
     rename "^modid.mixins.json\$", "${mod_id}.mixins.json"
     rename "^icon.png\$", "${mod_id}.png"
+
+    filesMatching('**/*.toml') {
+        expand 'mod_version': mod_version,
+                'neoforge_dependency': neoforge_dependency,
+                'minecraft_version': minecraft_version,
+                'mekanism_dependency': mekanism_dependency
+    }
 }
 
 minecraft.accessTransformers.file rootProject.file("src/main/resources/META-INF/accesstransformer.cfg")

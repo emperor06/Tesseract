@@ -1,5 +1,8 @@
 package com.supermartijn642.tesseract;
 
+import com.supermartijn642.tesseract.capabilities.ModCapabilities;
+import com.supermartijn642.tesseract.integration.MekanismUtils;
+
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -16,6 +19,8 @@ public class TesseractBlockApiProviders {
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, Tesseract.tesseract_tile, (entity, side) -> entity.getItemCapability());
             event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, Tesseract.tesseract_tile, (entity, side) -> entity.getFluidCapability());
             event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, Tesseract.tesseract_tile, (entity, side) -> entity.getEnergyCapability());
+            if(MekanismUtils.isMekanismInstalled())
+                event.registerBlockEntity(ModCapabilities.CHEMICAL_HANDLER_CAPABILITY, Tesseract.tesseract_tile, (entity, side) -> entity.getChemicalCapability());
         });
     }
 }

@@ -6,6 +6,7 @@ import com.supermartijn642.tesseract.TesseractBlock;
 import com.supermartijn642.tesseract.TesseractBlockEntity;
 import com.supermartijn642.tesseract.manager.Channel;
 import com.supermartijn642.tesseract.manager.TesseractChannelManager;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +29,8 @@ public class TesseractJadePlugin implements IBlockComponentProvider, IWailaPlugi
                 // Prevent Jade from showing the energy and fluid capability data
                 tooltip.remove(ResourceLocation.withDefaultNamespace("fe"));
                 tooltip.remove(ResourceLocation.withDefaultNamespace("fluid"));
+                tooltip.remove(ResourceLocation.withDefaultNamespace("chemical"));
+                tooltip.remove(ResourceLocation.fromNamespaceAndPath("mekanism", "chemical"));
             }
 
             @Override
@@ -57,6 +60,8 @@ public class TesseractJadePlugin implements IBlockComponentProvider, IWailaPlugi
             tooltip.add(formatChannelInfo(EnumChannelType.ITEMS, tesseract.getChannelId(EnumChannelType.ITEMS)));
             tooltip.add(formatChannelInfo(EnumChannelType.ENERGY, tesseract.getChannelId(EnumChannelType.ENERGY)));
             tooltip.add(formatChannelInfo(EnumChannelType.FLUID, tesseract.getChannelId(EnumChannelType.FLUID)));
+            if(MekanismUtils.isMekanismInstalled())
+                tooltip.add(formatChannelInfo(EnumChannelType.CHEMICAL, tesseract.getChannelId(EnumChannelType.CHEMICAL)));
             if(tesseract.isBlockedByRedstone())
                 tooltip.add(TextComponents.translation("tesseract.tesseract.highlight.redstone_blocked").color(ChatFormatting.RED).get());
         }
