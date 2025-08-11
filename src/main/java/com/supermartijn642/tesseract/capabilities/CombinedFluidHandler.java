@@ -7,6 +7,9 @@ import com.supermartijn642.tesseract.manager.TesseractReference;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -138,27 +141,36 @@ public class CombinedFluidHandler implements IFluidHandler {
             return 0;
         }
 
-        FluidStack fluid = resource.copy();
-        int amount = 0;
+        final List<Distribution> receivers = new ArrayList<Distribution>();
+        final int amount = resource.getAmount();
+        int inserted = 0;
+        int needed;
 
-        loop:
+        // Find all potential receivers and what they need
         for(TesseractReference location : this.channel.receivingTesseracts){
             if(location.canBeAccessed()){
                 TesseractBlockEntity entity = location.getTesseract();
                 if(entity != this.requester){
                     for(IFluidHandler handler : entity.getSurroundingFluidCapabilities()){
-                        amount += handler.fill(fluid, action);
-                        if(amount >= resource.getAmount())
-                            break loop;
-                        fluid.setAmount(resource.getAmount() - amount);
+                        if((needed = handler.fill(resource, FluidAction.SIMULATE)) > 0)
+                            receivers.add(new Distribution(handler, needed));
                     }
                 }
             }
         }
 
+        // do the maths
+        Distribution.distributeFair(receivers, amount);
+
+        // distribute everyone its fair share
+        for(Distribution d : receivers){
+            IFluidHandler handler = (IFluidHandler) d.handler;
+            inserted += handler.fill(resource.copyWithAmount((int) d.given), action);
+        }
+
         this.popRecurrentCall();
 
-        return amount;
+        return inserted;
     }
 
     @Nonnull
@@ -181,7 +193,7 @@ public class CombinedFluidHandler implements IFluidHandler {
                 if(entity != this.requester){
                     for(IFluidHandler handler : entity.getSurroundingFluidCapabilities()){
                         FluidStack stack = handler.drain(fluid.copy(), FluidAction.SIMULATE);
-                        if(!stack.isEmpty() && resource.isFluidEqual(stack)){
+                        if(!stack.isEmpty() && FluidStack.isSameFluidSameComponents(resource, stack)){
                             if(action.execute())
                                 handler.drain(fluid.copy(), FluidAction.EXECUTE);
                             fluid.setAmount(fluid.getAmount() - stack.getAmount());
@@ -229,7 +241,7 @@ public class CombinedFluidHandler implements IFluidHandler {
                                 fluid.setAmount(maxDrain - fluid.getAmount());
                         }else{
                             FluidStack stack = handler.drain(fluid.copy(), FluidAction.SIMULATE);
-                            if(!stack.isEmpty() && fluid.isFluidEqual(stack)){
+                            if(!stack.isEmpty() && FluidStack.isSameFluidSameComponents(fluid, stack)){
                                 if(action.execute())
                                     handler.drain(fluid.copy(), FluidAction.EXECUTE);
                                 fluid.setAmount(fluid.getAmount() - stack.getAmount());

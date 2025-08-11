@@ -1,5 +1,8 @@
 package com.supermartijn642.tesseract.capabilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.supermartijn642.tesseract.EnumChannelType;
 import com.supermartijn642.tesseract.TesseractBlockEntity;
 import com.supermartijn642.tesseract.manager.Channel;
@@ -20,39 +23,52 @@ public class CombinedEnergyStorage implements IEnergyStorage {
     }
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate){
+    public int receiveEnergy(int amount, boolean simulate){
         if(this.pushRecurrentCall())
             return 0;
 
-        if(!this.requester.canSend(EnumChannelType.ENERGY) || maxReceive <= 0){
+        if(!this.requester.canSend(EnumChannelType.ENERGY) || amount <= 0){
             this.popRecurrentCall();
             return 0;
         }
 
-        int amount = maxReceive;
+        int inserted = 0;
+        int needed;
+        final List<Distribution> receivers = new ArrayList<Distribution>();
 
-        loop:
+        // Find all potential receivers and what they need
         for(TesseractReference location : this.channel.receivingTesseracts){
-            if(location.canBeAccessed() && location.canReceive(EnumChannelType.ENERGY)){
+            if(location.canBeAccessed()){
                 TesseractBlockEntity entity = location.getTesseract();
                 if(entity != this.requester){
-                    for(IEnergyStorage storage : entity.getSurroundingEnergyCapabilities()){
-                        if(!storage.canReceive())
-                            continue;
-                        int received = storage.receiveEnergy(amount, simulate);
-                        if(received > 0){
-                            amount -= received;
-                            if(amount <= 0)
-                                break loop;
-                        }
+                    for(IEnergyStorage handler : entity.getSurroundingEnergyCapabilities()){
+                        if(handler.canReceive() && (needed = handler.receiveEnergy(amount, true)) > 0)
+                            receivers.add(new Distribution(handler, needed));
                     }
                 }
             }
         }
 
+        // do the maths
+        Distribution.distributeFair(receivers, amount);
+
+        // distribute everyone its fair share
+        for(Distribution d : receivers){
+            IEnergyStorage handler = (IEnergyStorage) d.handler;
+            inserted += handler.receiveEnergy((int) d.given, simulate);
+        }
+
+        // some mods (Mekanism) may refuse a single FE so there may be some resources left to distribute
+        int n = receivers.size();
+        while(n --> 0 && inserted < amount){
+            Distribution d = receivers.get(n);
+            IEnergyStorage handler = (IEnergyStorage) d.handler;
+            inserted += handler.receiveEnergy(amount - inserted, simulate);
+        }
+
         this.popRecurrentCall();
 
-        return Math.max(0, maxReceive - amount);
+        return inserted;
     }
 
     @Override

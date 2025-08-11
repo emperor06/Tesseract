@@ -1,5 +1,8 @@
 package com.supermartijn642.tesseract.capabilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.supermartijn642.tesseract.EnumChannelType;
 import com.supermartijn642.tesseract.TesseractBlockEntity;
 import com.supermartijn642.tesseract.manager.Channel;
@@ -149,9 +152,6 @@ public class CombinedChemicalHandler implements IChemicalHandler {
         return valid;
     }
 
-    /**
-     * Not called during my testings
-     */
     @Override
     public ChemicalStack insertChemical(int tank, ChemicalStack stack, Action action){
         if(this.pushRecurrentCall())
@@ -171,7 +171,7 @@ public class CombinedChemicalHandler implements IChemicalHandler {
                 if(entity != this.requester){
                     for(IChemicalHandler handler : entity.getSurroundingChemicalCapabilities()){
                         if(tank - tanks < handler.getChemicalTanks()){
-                            if (handler.isValid(tank - tanks, stack))
+                            if(handler.isValid(tank - tanks, stack))
                                 ret = handler.insertChemical(tank - tanks, stack, action);
                             break loop;
                         }else
@@ -196,25 +196,38 @@ public class CombinedChemicalHandler implements IChemicalHandler {
             return resource;
         }
 
-        ChemicalStack stack = resource.copy();
+        final List<Distribution> receivers = new ArrayList<Distribution>();
+        final long amount = resource.getAmount();
+        long inserted = 0;
+        long needed;
 
-        loop:
+        // Find all potential receivers and what they need
         for(TesseractReference location : this.channel.receivingTesseracts){
             if(location.canBeAccessed()){
                 TesseractBlockEntity entity = location.getTesseract();
                 if(entity != this.requester){
                     for(IChemicalHandler handler : entity.getSurroundingChemicalCapabilities()){
-                        stack = handler.insertChemical(stack, action);
-                        if(stack.isEmpty())
-                            break loop;
+                        if((needed = insertChems(handler, resource, Action.SIMULATE)) > 0)
+                            receivers.add(new Distribution(handler, needed));
                     }
                 }
             }
         }
 
+        // do the maths
+        Distribution.distributeFair(receivers, amount);
+
+        // distribute everyone its fair share
+        for(Distribution d : receivers){
+            IChemicalHandler handler = (IChemicalHandler) d.handler;
+            inserted += insertChems(handler, resource.copyWithAmount(d.given), action);
+        }
+
         this.popRecurrentCall();
 
-        return stack;
+        if(inserted >= amount)
+            return ChemicalStack.EMPTY;
+        return resource.copyWithAmount(resource.getAmount() - inserted);
     }
 
     @Override
@@ -248,6 +261,18 @@ public class CombinedChemicalHandler implements IChemicalHandler {
         this.popRecurrentCall();
 
         return ret;
+    }
+
+    /**
+     * Helper method so that insertChemical behaves like FluidHandler and Energy:
+     * it returns what was inserted instead of what remains.
+     * @param handler The chemical handler to call insertChemical() onto
+     * @param stack The chemical stack to insert (not modified)
+     * @param action simulate or execute
+     * @return The amount that was (or would have been) inserted.
+     */
+    public static long insertChems(IChemicalHandler handler, ChemicalStack stack, Action action){
+        return stack.getAmount() - handler.insertChemical(stack, action).getAmount();
     }
 
     /**
