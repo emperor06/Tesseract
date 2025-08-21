@@ -4,6 +4,7 @@ import com.supermartijn642.tesseract.EnumChannelType;
 import com.supermartijn642.tesseract.TesseractBlockEntity;
 import com.supermartijn642.tesseract.manager.Channel;
 import com.supermartijn642.tesseract.manager.TesseractReference;
+
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
@@ -145,6 +146,7 @@ public class CombinedFluidHandler implements IFluidHandler {
         final int amount = resource.getAmount();
         int inserted = 0;
         int needed;
+        FluidStack max = resource.copyWithAmount(Integer.MAX_VALUE);
 
         // Find all potential receivers and what they need
         for(TesseractReference location : this.channel.receivingTesseracts){
@@ -152,7 +154,7 @@ public class CombinedFluidHandler implements IFluidHandler {
                 TesseractBlockEntity entity = location.getTesseract();
                 if(entity != this.requester){
                     for(IFluidHandler handler : entity.getSurroundingFluidCapabilities()){
-                        if((needed = handler.fill(resource, FluidAction.SIMULATE)) > 0)
+                        if((needed = handler.fill(max, FluidAction.SIMULATE)) > 0)
                             receivers.add(new Distribution(handler, needed));
                     }
                 }

@@ -200,6 +200,7 @@ public class CombinedChemicalHandler implements IChemicalHandler {
         final long amount = resource.getAmount();
         long inserted = 0;
         long needed;
+        ChemicalStack max = resource.copyWithAmount(Long.MAX_VALUE);
 
         // Find all potential receivers and what they need
         for(TesseractReference location : this.channel.receivingTesseracts){
@@ -207,7 +208,7 @@ public class CombinedChemicalHandler implements IChemicalHandler {
                 TesseractBlockEntity entity = location.getTesseract();
                 if(entity != this.requester){
                     for(IChemicalHandler handler : entity.getSurroundingChemicalCapabilities()){
-                        if((needed = insertChems(handler, resource, Action.SIMULATE)) > 0)
+                        if((needed = insertChems(handler, max, Action.SIMULATE)) > 0)
                             receivers.add(new Distribution(handler, needed));
                     }
                 }

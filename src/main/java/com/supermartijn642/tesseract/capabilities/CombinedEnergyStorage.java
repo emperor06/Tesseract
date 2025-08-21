@@ -7,6 +7,7 @@ import com.supermartijn642.tesseract.EnumChannelType;
 import com.supermartijn642.tesseract.TesseractBlockEntity;
 import com.supermartijn642.tesseract.manager.Channel;
 import com.supermartijn642.tesseract.manager.TesseractReference;
+
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
 /**
@@ -42,7 +43,7 @@ public class CombinedEnergyStorage implements IEnergyStorage {
                 TesseractBlockEntity entity = location.getTesseract();
                 if(entity != this.requester){
                     for(IEnergyStorage handler : entity.getSurroundingEnergyCapabilities()){
-                        if(handler.canReceive() && (needed = handler.receiveEnergy(amount, true)) > 0)
+                        if(handler.canReceive() && (needed = handler.receiveEnergy(Integer.MAX_VALUE, true)) > 0)
                             receivers.add(new Distribution(handler, needed));
                     }
                 }
